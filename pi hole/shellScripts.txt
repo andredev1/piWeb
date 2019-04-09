@@ -1,0 +1,87 @@
+dbquery=`mysql -Ddtb_test -uroot -ptroot -se "SELECT fld_id FROM tbl_piBilling"`      
+dbquery_array=( $( for i in $dbquery ; do echo $i ; done ) )
+echo dbquery_array[0];
+
+
+line=$(mysql -u root -proot -e "select 1;")
+if [ $line -eq 1 ]; then
+   echo "111111111"
+fi
+
+dbquery=`mysql -u root -proot -e "select 1;"`    
+dbquery_array=( $( for i in $dbquery ; do echo $i ; done ) )
+
+
+INPUT='someletters_12345_moreleters.ext'
+SUBSTRING=$(echo $INPUT| cut -d'_' -f 2)
+echo $SUBSTRING
+
+
+ssh -i tpblock.pem ubuntu@52.17.25.192
+echo "4" > /sys/class/gpio/export
+echo "out" > /sys/class/gpio/gpio4/direction
+INPUT1=$(echo "SELECT fld_daysRunning FROM tbl_piBilling where fld_serial='MaaDsXGfgT51'" | mysql dtb_test -uandre -pandre)
+INPUT1=$(echo $INPUT1| cut -d' ' -f 2)
+echo $INPUT1
+INPUT2=$(echo "SELECT fld_daysPayedFor FROM tbl_piBilling where fld_serial='MaaDsXGfgT51'" | mysql dtb_test -u root -proot)
+INPUT2=$(echo $INPUT2| cut -d' ' -f 2)
+echo $INPUT2
+if [ $INPUT2 -gt $INPUT1 ]; then
+   echo "1" > /sys/class/gpio/gpio4/value
+fi
+if [ $INPUT2 -eq $INPUT1 ]; then
+   echo "1" > /sys/class/gpio/gpio4/value
+fi
+if [ $INPUT2 -lt $INPUT1 ]; then
+   echo "0" > /sys/class/gpio/gpio4/value
+fi
+
+
+
+
+
+
+
+
+
+echo "4" > /sys/class/gpio/export
+echo "out" > /sys/class/gpio/gpio4/direction
+INPUT1=$(echo "SELECT fld_daysRunning FROM tbl_piBilling where fld_serial='MaaDsXGfgT51'" | mysql dtb_test )
+INPUT1=$(echo $INPUT1| cut -d' ' -f 2)
+echo $INPUT1
+INPUT2=$(echo "SELECT fld_daysPayedFor FROM tbl_piBilling where fld_serial='MaaDsXGfgT51'" | mysql dtb_test )
+INPUT2=$(echo $INPUT2| cut -d' ' -f 2)
+echo $INPUT2
+if [ $INPUT2 -gt $INPUT1 ]; then
+   echo "1" > /sys/class/gpio/gpio4/value
+fi
+if [ $INPUT2 -eq $INPUT1 ]; then
+   echo "1" > /sys/class/gpio/gpio4/value
+fi
+if [ $INPUT2 -lt $INPUT1 ]; then
+   echo "0" > /sys/class/gpio/gpio4/value
+fi
+
+
+
+
+
+
+
+
+
+
+
+SELECT fld_daysRunning, fld_daysPayedFor,
+CASE
+    WHEN fld_daysRunning > fld_daysPayedFor THEN "0"
+    ELSE "1"
+END AS HasPower
+FROM tbl_piBilling;
+
+CASE
+    WHEN (SELECT top fld_daysRunning from tbl_piBilling) > (SELECT top fld_daysPayedFor from tbl_piBilling) THEN "0"
+    ELSE "1"
+END
+
+myvariable=$(echo "SELECT fld_daysRunning FROM tbl_piBilling where fld_serial='MaaDsXGfgT51'" | mysql dtb_test -u root -proot)
